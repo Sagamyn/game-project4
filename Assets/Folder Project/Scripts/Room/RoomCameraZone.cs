@@ -14,11 +14,13 @@ public class RoomCameraZone : MonoBehaviour
     private RoomPuzzleManager puzzleManager;
     private PlayerRoomTransition playerTransition;
     private Coroutine resetCoroutine;
+    private RoomCheckpoint roomCheckpoint;
 
     private void Awake()
     {
         GetComponent<BoxCollider2D>().isTrigger = true;
         puzzleManager = GetComponent<RoomPuzzleManager>();
+        roomCheckpoint = GetComponent<RoomCheckpoint>();
     }
 
 
@@ -33,17 +35,25 @@ public class RoomCameraZone : MonoBehaviour
             resetCoroutine = null;
         }
 
-        // Freeze the player during the room transition.
-        if (playerTransition == null)
-        {
-            playerTransition =
-                other.GetComponent<PlayerRoomTransition>();
-        }
+        PlayerDeathController deathController =
+    other.GetComponent<PlayerDeathController>();
 
-        if (playerTransition != null)
-        {
-            playerTransition.FreezePlayer();
-        }
+    if (deathController != null && roomCheckpoint != null)
+    {
+        deathController.SetCheckpoint(roomCheckpoint);
+    }
+
+        // // Freeze the player during the room transition.
+        // if (playerTransition == null)
+        // {
+        //     playerTransition =
+        //         other.GetComponent<PlayerRoomTransition>();
+        // }
+
+        // if (playerTransition != null)
+        // {
+        //     playerTransition.FreezePlayer();
+        // }
 
         // Slide the camera to this room.
         if (cameraController != null)
