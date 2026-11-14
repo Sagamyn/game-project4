@@ -48,6 +48,42 @@ public class FallingObject : MonoBehaviour
             spriteRenderer.color =
                 new Color(1f, 0.75f, 0.2f, 1f);
         }
+
+        // Kill the player if they are underneath the block
+        if (other.CompareTag("Player"))
+        {
+            if (other.bounds.center.y < GetComponent<Collider2D>().bounds.center.y)
+            {
+                PlayerDeathController death =
+                    other.GetComponent<PlayerDeathController>();
+
+                if (death != null)
+                    death.Die();
+            }
+        }
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+            // Block must be moving downward
+        if (rb.velocity.y >= -0.1f)
+            return;
+
+        // Check where the collision happens
+        foreach (ContactPoint2D contact in collision.contacts)
+        {
+            // The contact must be on the upper side of the player
+            if (contact.normal.y < -0.5f)
+            {
+                PlayerDeathController death =
+                    collision.gameObject.GetComponent<PlayerDeathController>();
+
+                if (death != null)
+                    death.Die();
+
+                return;
+            }
+        }
     }
 
     public void ResetObject()
